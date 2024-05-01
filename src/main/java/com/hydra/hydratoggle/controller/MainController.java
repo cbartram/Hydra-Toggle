@@ -1,9 +1,10 @@
-package com.hydra.hydratoggle;
+package com.hydra.hydratoggle.controller;
 
+import com.hydra.hydratoggle.ClientToggle;
+import com.hydra.hydratoggle.model.ClientType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.text.TextAlignment;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;

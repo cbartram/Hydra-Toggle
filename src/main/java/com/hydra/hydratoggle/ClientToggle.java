@@ -1,5 +1,6 @@
 package com.hydra.hydratoggle;
 
+import com.hydra.hydratoggle.model.ClientType;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 

@@ -1,4 +1,4 @@
-package com.hydra.hydratoggle;
+package com.hydra.hydratoggle.model;
 
 import lombok.Getter;
 

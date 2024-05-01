@@ -12,6 +12,7 @@ import java.nio.file.Path;
 
 @Log4j2
 public class HydraToggleApplication extends Application {
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HydraToggleApplication.class.getResource("main-view.fxml"));
@@ -22,6 +23,6 @@ public class HydraToggleApplication extends Application {
     }
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }
