@@ -3,18 +3,24 @@ package com.hydra.hydratoggle.controller;
 import com.hydra.hydratoggle.ClientToggle;
 import com.hydra.hydratoggle.HydraToggleApplication;
 import com.hydra.hydratoggle.model.ClientType;
+import com.hydra.hydratoggle.model.HydraConfig;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.SVGPath;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static com.hydra.hydratoggle.HydraToggleApplication.toggle;
 
 @Log4j2
 public class MainController {
@@ -34,7 +40,18 @@ public class MainController {
     @FXML
     private ImageView imageView;
 
-    private final ClientToggle toggle;
+    @FXML
+    private SVGPath moonSVG;
+
+    @FXML
+    private VBox root;
+
+    private static final String MOON_SVG = "M21.87,21.45c-3.12,3.12-8.19,8.12-11.31,0c-3.12-3.12-3.12-8.2,0-11.32" +
+            "c0.83-0.82,1.83-1.45,2.99-1.86c0.36-0.13,0.77-0.04,1.04,0.24c0.27,0.27,0.37,0.68,0.24,1.04" +
+            "c-0.78,2.21-0.25,4.6,1.39,6.24c1.64,1.64,4.03,2.17,6.24,1.39c0.36-0.13,0.77-0.04,1.04,0.24" +
+            "c0.27,0.27,0.36,0.68,0.24,1.04C23.32,19.62,22.69,20.62,21.87,21.45z M11.97,11.55" +
+            "c-2.34,2.34-2.34,6.15,0,8.48c2.5,2.5,6.76,2.28,8.94-0.51c-2.25,0.14-4.46-0.67-6.11-2.32" +
+            "c-1.65-1.65-2.46-3.86-2.32-6.11C12.3,11.24,12.13,11.39,11.97,11.55z";
 
     private static final String PRIMARY_BUTTON_STYLE = "-fx-background-color: #007bff;" +
             "-fx-border-color: #007bff;" +
@@ -46,14 +63,12 @@ public class MainController {
             "-fx-background-radius: 4px;" +
             "-fx-border-radius: 4px;";
 
-    public MainController() {
-        this.toggle = new ClientToggle();
-    }
 
     @FXML
     public void initialize() {
         runeLiteButton.setStyle(PRIMARY_BUTTON_STYLE);
         hydraButton.setStyle(PRIMARY_BUTTON_STYLE);
+        moonSVG.setContent(MOON_SVG);
 
         // Check for the existence of the hydra-toggle.conf file.
         if (!Files.exists(Path.of(toggle.getHydraConfFilePath()))) {
@@ -70,7 +85,10 @@ public class MainController {
                 // and set the button disabled status accordingly
                 try {
                     toggle.createConfFile();
-                    switchClientType(ClientType.RUNELITE);
+                    toggle.getConfig().setClientType(ClientType.RUNELITE);
+                    toggle.getConfig().setDarkModeEnabled(false);
+
+                    switchClientType();
                 } catch (IOException e) {
                     log.error("Failed to write the hydra toggle file. Error: ");
                     e.printStackTrace();
@@ -80,37 +98,36 @@ public class MainController {
         }
         log.info("Hydra toggle file exists at {}.", toggle.getHydraConfFilePath());
 
-        ClientType activeClient = this.toggle.readActiveClient();
-        if(activeClient == ClientType.UNKNOWN) {
+        HydraConfig conf = toggle.readConfig();
+        if(conf.getClientType() == ClientType.UNKNOWN) {
             log.error("Could not determine current client type. Make sure your Hydra client is named \"RuneLite-hydra.jar\" and your RuneLite client is named \"RuneLite.jar\".");
 
             // Attempt to delete the hydra conf file so the next time this application is started AND the jar files are
             // named correctly it will work.
             try {
-                Files.delete(Path.of(this.toggle.getHydraConfFilePath()));
+                Files.delete(Path.of(toggle.getHydraConfFilePath()));
             } catch (IOException e) {
                 log.error("Failed to delete hydra-toggle conf file.");
             }
         }
 
-        currentClientLabel.setText(activeClient.toString());
-        switchClientType(activeClient);
+        currentClientLabel.setText(conf.getClientType().toString());
+        switchClientType();
     }
 
     /**
      * Updates the GUI to reflect the latest client type (Hydra or RuneLite). This will update the buttons
      * to be clickable and disabled, write the value to the hydra-toggle conf file, and update the GUI text label
      * accordingly.
-     * @param clientType The client type to switch to either ClientType.HYDRA or ClientType.RUNELITE
      */
-    private void switchClientType(ClientType clientType) {
+    private void switchClientType() {
         try {
-            toggle.persistActiveClient(clientType);
+            toggle.persistConfig();
         } catch (IOException e) {
-            log.error("Failed to update hydra-toggle conf file with value {}", clientType.toString());
+            log.error("Failed to update hydra-toggle conf file with value {}", toggle.getConfig().getClientType().toString());
             e.printStackTrace();
         }
-        if(clientType == ClientType.RUNELITE) {
+        if(toggle.getConfig().getClientType() == ClientType.RUNELITE) {
             runeLiteButton.setDisable(true);
             hydraButton.setDisable(false);
             currentClientLabel.setText(ClientType.RUNELITE.toString());
@@ -136,15 +153,27 @@ public class MainController {
 
     @FXML
     protected void onRuneLiteButtonClick() {
-        this.toggle.renameFile("RuneLite.jar", "RuneLite-hydra.jar");
-        this.toggle.renameFile("RuneLite-real.jar", "RuneLite.jar");
-        switchClientType(ClientType.RUNELITE);
+        toggle.renameFile("RuneLite.jar", "RuneLite-hydra.jar");
+        toggle.renameFile("RuneLite-real.jar", "RuneLite.jar");
+        toggle.getConfig().setClientType(ClientType.RUNELITE);
+        switchClientType();
     }
 
     @FXML
     protected void onHydraButtonClick() {
-        this.toggle.renameFile("RuneLite.jar", "RuneLite-real.jar");
-        this.toggle.renameFile("RuneLite-hydra.jar", "RuneLite.jar");
-        switchClientType(ClientType.HYDRA);
+        toggle.renameFile("RuneLite.jar", "RuneLite-real.jar");
+        toggle.renameFile("RuneLite-hydra.jar", "RuneLite.jar");
+        toggle.getConfig().setClientType(ClientType.HYDRA);
+        switchClientType();
+    }
+
+    @FXML
+    protected void onDarkModeClick() {
+        toggle.getConfig().setDarkModeEnabled(!toggle.getConfig().isDarkModeEnabled());
+        if(toggle.getConfig().isDarkModeEnabled()) {
+            root.setStyle("-fx-background-color: #11315c");
+        } else {
+            root.setStyle("-fx-background-color: #ffffff");
+        }
     }
 }

@@ -5,9 +5,9 @@ import lombok.Getter;
 import java.util.Objects;
 
 public enum ClientType {
-    RUNELITE("0"),
-    HYDRA("1"),
-    UNKNOWN("2");
+    RUNELITE("RUNELITE"),
+    HYDRA("HYDRA"),
+    UNKNOWN("UNKNOWN");
 
     @Getter
     private final String value;

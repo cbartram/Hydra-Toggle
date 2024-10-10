@@ -6,6 +6,7 @@ module com.hydra.hydratoggle {
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
     requires static lombok;
+    requires com.fasterxml.jackson.databind;
 
     opens com.hydra.hydratoggle to javafx.fxml;
     exports com.hydra.hydratoggle;

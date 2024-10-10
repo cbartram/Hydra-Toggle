@@ -6,18 +6,20 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="254.0" prefWidth="410.0" spacing="20.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hydra.hydratoggle.controller.MainController">
+<VBox fx:id="root" alignment="CENTER" prefHeight="483.0" prefWidth="507.0" spacing="20.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hydra.hydratoggle.controller.MainController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-    <HBox prefHeight="34.0" prefWidth="235.0">
+    <HBox prefHeight="50.0" prefWidth="430.0" VBox.vgrow="NEVER">
         <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="31.0" prefWidth="341.0" text="Hydra Toggle">
           <font>
               <Font size="21.0" />
           </font>
         </Label>
+      <SVGPath fx:id="moonSVG" content="M43.73,42.89c-6.23,6.24-16.39,6.24-22.63,0c-6.24-6.24-6.24-16.39,0-22.63&quot; +    &quot;c1.65-1.65,3.66-2.91,5.98-3.73c0.73-0.26,1.54-0.07,2.08,0.47c0.55,0.55,0.73,1.35,0.47,2.08&quot; +    &quot;c-1.57,4.42-0.5,9.21,2.78,12.49c3.28,3.28,8.06,4.34,12.49,2.78c0.72-0.26,1.53-0.07,2.08,0.47&quot; +    &quot;c0.55,0.54,0.73,1.35,0.47,2.08C46.64,39.23,45.38,41.24,43.73,42.89z M23.93,23.09&quot; +    &quot;c-4.68,4.68-4.68,12.29,0,16.97c5,5,13.52,4.55,17.88-1.02c-4.49,0.28-8.92-1.34-12.22-4.64&quot; +    &quot;c-3.3-3.29-4.92-7.72-4.64-12.22C24.6,22.47,24.25,22.77,23.93,23.09z" onMouseClicked="#onDarkModeClick" HBox.hgrow="NEVER" />
     </HBox>
    <Label fx:id="errorLabel" maxWidth="1.7976931348623157E308" prefHeight="36.0" prefWidth="265.0" textFill="#f60808" textOverrun="LEADING_ELLIPSIS" wrapText="true" VBox.vgrow="ALWAYS">
       <font>
