@@ -14,7 +14,7 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <HBox prefHeight="50.0" prefWidth="430.0" VBox.vgrow="NEVER">
-        <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="31.0" prefWidth="341.0" text="Hydra Toggle">
+        <Label fx:id="title" alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="31.0" prefWidth="341.0" text="Hydra Toggle">
           <font>
               <Font size="21.0" />
           </font>
@@ -27,7 +27,7 @@
       </font>
    </Label>
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-        <Label prefHeight="25.0" prefWidth="112.0" text="Current Client:  ">
+        <Label fx:id="staticCurrentClientLabel" prefHeight="25.0" prefWidth="112.0" text="Current Client:  ">
            <font>
                <Font size="16.0" />
            </font>

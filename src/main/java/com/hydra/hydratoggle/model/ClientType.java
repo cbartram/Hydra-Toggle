@@ -18,7 +18,7 @@ public enum ClientType {
 
     @Override
     public String toString() {
-        if(Objects.equals(this.value, "0")) {
+        if(Objects.equals(this.value, "RUNELITE")) {
             return "RuneLite Client";
         }
         return "Hydra Client";

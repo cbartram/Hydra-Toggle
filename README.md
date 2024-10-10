@@ -23,7 +23,7 @@ Old School RuneScape.
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![gui screenshot][product-screenshot]]()
+[![hydra_toggle][product-screenshot]]()
 
 This application provides a neat GUI for toggling between the standard RuneLite client and the Hydra Tech client for
 Old School RuneScape. [Hydra Tech](https://osrsplugins.xyz/home) is a third party RuneLite plugin which can get your
@@ -60,6 +60,24 @@ Click on the "Switch to RuneLite" and re-launch your client from the Jagex launc
 also click on "Switch to Hydra" and re-launch your client from the Jagex launcher to load the Hydra client.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+## Building & Distributing
+
+To build the package run the `./gradlew build` command. In the `build` folder you will find the tar and zip
+files under distributions. 
+
+To ensure that no console starts with the application perform the following steps:
+
+- Unzip the file and open the `bin` folder.
+- Edit the `hydra-toggle.bat` file and replace any instances of `java.exe` with `javaw.exe`
+- Finally on this line: `"%JAVA_EXE%" %JAVA_OPTS% %HYDRA_TOGGLE_OPTS% %DEFAULT_JVM_OPTS% %*` add the prefix `start "" `
+
+The full line should look like:
+
+`start "" "%JAVA_EXE%" %JAVA_OPTS% %HYDRA_TOGGLE_OPTS% %DEFAULT_JVM_OPTS% %*`'
+
+- Repackage the zip file with the modified `.bat` file and upload to Github releases.
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -101,4 +119,4 @@ Christian Bartram - [@cbartram](https://github.com/cbartram)
 [issues-url]: https://github.com/cbartram/Hydra-Toggle/issues
 [license-shield]: https://img.shields.io/github/license/cbartram/Hydra-Toggle.svg?style=for-the-badge
 [license-url]: https://github.com/cbartram/Hydra-Toggle/blob/master/LICENSE.txt
-[product-screenshot]: images/gui_screenshot.png
+[product-screenshot]: images/hydra_toggle.gif

@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.SVGPath;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +28,12 @@ public class MainController {
 
     @FXML
     private Label currentClientLabel;
+
+    @FXML
+    private Label staticCurrentClientLabel;
+
+    @FXML
+    private Label title;
 
     @FXML
     private Label errorLabel;
@@ -88,7 +95,7 @@ public class MainController {
                     toggle.getConfig().setClientType(ClientType.RUNELITE);
                     toggle.getConfig().setDarkModeEnabled(false);
 
-                    switchClientType();
+                    toggleClientType();
                 } catch (IOException e) {
                     log.error("Failed to write the hydra toggle file. Error: ");
                     e.printStackTrace();
@@ -112,7 +119,8 @@ public class MainController {
         }
 
         currentClientLabel.setText(conf.getClientType().toString());
-        switchClientType();
+        toggleClientType();
+        toggleDarkMode();
     }
 
     /**
@@ -120,13 +128,7 @@ public class MainController {
      * to be clickable and disabled, write the value to the hydra-toggle conf file, and update the GUI text label
      * accordingly.
      */
-    private void switchClientType() {
-        try {
-            toggle.persistConfig();
-        } catch (IOException e) {
-            log.error("Failed to update hydra-toggle conf file with value {}", toggle.getConfig().getClientType().toString());
-            e.printStackTrace();
-        }
+    private void toggleClientType() {
         if(toggle.getConfig().getClientType() == ClientType.RUNELITE) {
             runeLiteButton.setDisable(true);
             hydraButton.setDisable(false);
@@ -151,12 +153,27 @@ public class MainController {
         }
     }
 
+    /**
+     * Changes the UI to be more friendly to dark environments by making the background and text darker.
+     */
+    private void toggleDarkMode() {
+        if(toggle.getConfig().isDarkModeEnabled()) {
+            root.setStyle("-fx-background-color: #11315c");
+            staticCurrentClientLabel.setTextFill(Color.WHITESMOKE);
+            title.setTextFill(Color.WHITESMOKE);
+        } else {
+            root.setStyle("-fx-background-color: #ffffff");
+            staticCurrentClientLabel.setTextFill(Color.BLACK);
+            title.setTextFill(Color.BLACK);
+        }
+    }
+
     @FXML
     protected void onRuneLiteButtonClick() {
         toggle.renameFile("RuneLite.jar", "RuneLite-hydra.jar");
         toggle.renameFile("RuneLite-real.jar", "RuneLite.jar");
         toggle.getConfig().setClientType(ClientType.RUNELITE);
-        switchClientType();
+        toggleClientType();
     }
 
     @FXML
@@ -164,16 +181,12 @@ public class MainController {
         toggle.renameFile("RuneLite.jar", "RuneLite-real.jar");
         toggle.renameFile("RuneLite-hydra.jar", "RuneLite.jar");
         toggle.getConfig().setClientType(ClientType.HYDRA);
-        switchClientType();
+        toggleClientType();
     }
 
     @FXML
     protected void onDarkModeClick() {
         toggle.getConfig().setDarkModeEnabled(!toggle.getConfig().isDarkModeEnabled());
-        if(toggle.getConfig().isDarkModeEnabled()) {
-            root.setStyle("-fx-background-color: #11315c");
-        } else {
-            root.setStyle("-fx-background-color: #ffffff");
-        }
+        toggleDarkMode();
     }
 }
