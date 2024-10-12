@@ -20,7 +20,6 @@ Old School RuneScape.
     <br />
 </div>
 
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 
 [![hydra_toggle][product-screenshot]]()
@@ -39,7 +38,6 @@ third party client.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- GETTING STARTED -->
 ## Getting Started
 
 * Go to `C:\Users\<YOUR_USERNAME>\AppData\Local\RuneLite`
@@ -53,7 +51,6 @@ To get started simply download the latest pre-built binary from the [releases pa
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- USAGE EXAMPLES -->
 ## Usage
 
 Click on the "Switch to RuneLite" and re-launch your client from the Jagex launcher to load standard RuneLite. You can
@@ -79,7 +76,6 @@ The full line should look like:
 
 - Repackage the zip file with the modified `.bat` file and upload to Github releases.
 
-<!-- CONTRIBUTING -->
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -95,14 +91,12 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- CONTACT -->
 ## Contact
 
 Christian Bartram - [@cbartram](https://github.com/cbartram)

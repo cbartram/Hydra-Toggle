@@ -1,5 +1,10 @@
 package com.hydra.hydratoggle;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.hydra.hydratoggle.model.ClientType;
 import com.hydra.hydratoggle.model.HydraConfig;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -8,22 +13,35 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.Objects;
 
 @Log4j2
 public class HydraToggleApplication extends Application {
 
-    public static ClientToggle toggle = new ClientToggle(new HydraConfig());
+    @Inject
+    private HydraConfig config;
+
+    private static Injector injector;
+
+    @Override
+    public void init() throws Exception {
+        super.init();
+        injector = Guice.createInjector(new HydraToggleBindings());
+        injector.injectMembers(this);
+    }
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HydraToggleApplication.class.getResource("main-view.fxml"));
-        Image icon = new Image(HydraToggleApplication.class.getResourceAsStream("hydra_logo.jpg"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("main-view.fxml"));
+        loader.setControllerFactory(injector::getInstance);
+
+        Image icon = new Image(getClass().getResourceAsStream("hydra_logo.jpg"));
         stage.getIcons().add(icon);
 
-        Scene scene = new Scene(fxmlLoader.load(), 390, 240);
+        Scene scene = new Scene(loader.load(), 390, 240);
+        stage.setResizable(false);
         stage.setTitle("Hydra Toggle");
         stage.setScene(scene);
         stage.show();
@@ -32,7 +50,11 @@ public class HydraToggleApplication extends Application {
     @Override
     public void stop() {
         try {
-            toggle.persistConfig();
+            if(!Objects.equals(ClientType.RUNELITE.getValue(), "RUNELITE") && !Objects.equals(ClientType.HYDRA.getValue(), "HYDRA")) {
+                throw new IllegalArgumentException("The value to write must be either RUNELITE for RuneLite or HYDRA for Hydra RuneLite");
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(new File(config.getHydraConfFilePath()), config);
         } catch (IOException e) {
             System.err.println("Error occurred while persisting configuration on program exit.");
             e.printStackTrace();
