@@ -104,7 +104,7 @@ public class MainController {
             String errorMessage = "No jars detected at:" + config.getRuneLiteDirectory() +
                     " Please make sure the JAR files exist and are named correctly.";
             log.error(errorMessage);
-            errorLabel.setText(errorMessage);
+            errorLabel.setText("Ensure RuneLite");
             return;
         }
 
@@ -148,7 +148,7 @@ public class MainController {
             hydraButton.setDisable(true);
             currentClientLabel.setText(ClientType.HYDRA.toString());
             currentClientLabel.setTextFill(Paint.valueOf("#1e73fc"));
-            InputStream is = HydraToggleApplication.class.getResourceAsStream("hydra_logo.jpg");
+            InputStream is = HydraToggleApplication.class.getResourceAsStream("hydra_logo.png");
             if (is != null) {
                 imageView.setImage(new Image(is));
             }
@@ -174,18 +174,22 @@ public class MainController {
 
     @FXML
     protected void onRuneLiteButtonClick() {
-        toggle.renameFile("RuneLite.jar", "RuneLite-hydra.jar");
-        toggle.renameFile("RuneLite-real.jar", "RuneLite.jar");
-        toggle.getConfig().setClientType(ClientType.RUNELITE);
-        toggleClientType();
+        if(toggle.renameFile("RuneLite.jar", "RuneLite-hydra.jar") && toggle.renameFile("RuneLite-real.jar", "RuneLite.jar")) {
+            toggle.getConfig().setClientType(ClientType.RUNELITE);
+            toggleClientType();
+        } else {
+            errorLabel.setText("Could not switch clients. See logs for more info.");
+        }
     }
 
     @FXML
     protected void onHydraButtonClick() {
-        toggle.renameFile("RuneLite.jar", "RuneLite-real.jar");
-        toggle.renameFile("RuneLite-hydra.jar", "RuneLite.jar");
-        toggle.getConfig().setClientType(ClientType.HYDRA);
-        toggleClientType();
+        if(toggle.renameFile("RuneLite.jar", "RuneLite-real.jar") && toggle.renameFile("RuneLite-hydra.jar", "RuneLite.jar")) {
+            toggle.getConfig().setClientType(ClientType.HYDRA);
+            toggleClientType();
+        } else {
+            errorLabel.setText("Could not switch clients. See logs for more info.");
+        }
     }
 
     @FXML

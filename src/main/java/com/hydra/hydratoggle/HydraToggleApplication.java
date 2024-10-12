@@ -37,7 +37,7 @@ public class HydraToggleApplication extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main-view.fxml"));
         loader.setControllerFactory(injector::getInstance);
 
-        Image icon = new Image(getClass().getResourceAsStream("hydra_logo.jpg"));
+        Image icon = new Image(getClass().getResourceAsStream("hydra_logo.png"));
         stage.getIcons().add(icon);
 
         Scene scene = new Scene(loader.load(), 390, 240);
