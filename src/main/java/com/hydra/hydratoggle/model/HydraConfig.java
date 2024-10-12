@@ -29,7 +29,10 @@ public class HydraConfig {
     private String hydraJarPath = runeLiteDirectory + sep + "RuneLite-hydra.jar";
 
     @Setter(value = AccessLevel.NONE)
-    private String hydraConfFilePath = this.runeLiteDirectory + sep + "hydra_toggle.json";
+    private String hydraConfFilePath = runeLiteDirectory + sep + "hydra_toggle.json";
+
+    @Setter(value = AccessLevel.NONE)
+    private String runeLiteExePath = runeLiteDirectory + sep + "RuneLite.exe";
 
     private ClientType clientType;
     private boolean darkModeEnabled;

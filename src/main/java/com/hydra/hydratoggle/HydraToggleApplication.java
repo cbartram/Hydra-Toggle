@@ -40,7 +40,7 @@ public class HydraToggleApplication extends Application {
         Image icon = new Image(getClass().getResourceAsStream("hydra_logo.png"));
         stage.getIcons().add(icon);
 
-        Scene scene = new Scene(loader.load(), 390, 240);
+        Scene scene = new Scene(loader.load(), 390, 320);
         stage.setResizable(false);
         stage.setTitle("Hydra Toggle");
         stage.setScene(scene);

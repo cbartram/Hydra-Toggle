@@ -5,6 +5,7 @@ import com.hydra.hydratoggle.ClientToggle;
 import com.hydra.hydratoggle.HydraToggleApplication;
 import com.hydra.hydratoggle.model.ClientType;
 import com.hydra.hydratoggle.model.HydraConfig;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Log4j2
 public class MainController {
@@ -59,10 +62,26 @@ public class MainController {
     @FXML
     private VBox root;
 
+    @FXML
+    private Button launchButton;
+
     private SVGPath moonSVG;
+    private AtomicBoolean isRunning;
+    private ReentrantLock lock;
 
     private static final String PRIMARY_BUTTON_STYLE = "-fx-background-color: #007bff;" +
             "-fx-border-color: #007bff;" +
+            "-fx-text-fill: white;" +
+            "-fx-font-family: 'Helvetica Neue', Arial, sans-serif;" +
+            "-fx-font-size: 14px;" +
+            "-fx-padding: 4px 8px;" +
+            "-fx-cursor: hand;" +
+            "-fx-background-radius: 4px;" +
+            "-fx-border-radius: 4px;";
+
+
+    private static final String SUCCESS_BUTTON_STYLE = "-fx-background-color: #0AC835;" +
+            "-fx-border-color: #0AC835;" +
             "-fx-text-fill: white;" +
             "-fx-font-family: 'Helvetica Neue', Arial, sans-serif;" +
             "-fx-font-size: 14px;" +
@@ -84,6 +103,7 @@ public class MainController {
     private void setStyles() {
         runeLiteButton.setStyle(PRIMARY_BUTTON_STYLE);
         hydraButton.setStyle(PRIMARY_BUTTON_STYLE);
+        launchButton.setStyle(SUCCESS_BUTTON_STYLE);
         imageView.setEffect(new DropShadow(20, Color.BLACK));
 
         moonSVG = new SVGPath();
@@ -99,6 +119,9 @@ public class MainController {
     @FXML
     public void initialize() {
         setStyles();
+
+        this.isRunning = new AtomicBoolean(false);
+        this.lock = new ReentrantLock();
 
         if(!toggle.canDetectClientJars()) {
             String errorMessage = "No jars detected at:" + config.getRuneLiteDirectory() +
@@ -196,5 +219,48 @@ public class MainController {
     protected void onDarkModeClick() {
         toggle.getConfig().setDarkModeEnabled(!toggle.getConfig().isDarkModeEnabled());
         toggleDarkMode();
+    }
+
+    @FXML
+    protected void onLaunch() {
+        new Thread(() -> {
+            if (lock.tryLock()) {
+                try {
+                    if (!isRunning.get()) {
+                        isRunning.set(true);
+
+                        try {
+                            ProcessBuilder processBuilder = new ProcessBuilder(config.getRuneLiteExePath());
+                            Process process = processBuilder.start();
+
+                            System.out.println("Process started.");
+                            Platform.runLater(() -> {
+                                launchButton.setDisable(true);
+                                launchButton.setText("Client is Running...");
+                            });
+
+                            // TODO This takes a long time to detect that the client closed (i.e. > 25 seconds). Find a way around this.
+                            int exitCode = process.waitFor();
+                            System.out.println("Process exited with code: " + exitCode);
+                        } catch (IOException | InterruptedException e) {
+                            e.printStackTrace();
+                        } finally {
+                            isRunning.set(false);
+                            Platform.runLater(() -> {
+                                launchButton.setDisable(false);
+                                launchButton.setText("Launch Client");
+                            });
+                        }
+                    } else {
+                        System.out.println("Process is already running. Cannot start a new instance.");
+                    }
+                } finally {
+                    lock.unlock();
+
+                }
+            } else {
+                System.out.println("Another thread is attempting to start the process. Try again later.");
+            }
+        }).start();
     }
 }
