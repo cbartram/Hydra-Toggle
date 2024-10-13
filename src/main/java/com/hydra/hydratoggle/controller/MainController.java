@@ -221,6 +221,39 @@ public class MainController {
         toggleDarkMode();
     }
 
+    /**
+     * Updates the launch button to be disabled or enabled when RuneLite or Hydra is starting.
+     */
+    private void updateLaunchButtonState() {
+        Platform.runLater(() -> {
+            if (isRunning.get()) {
+                launchButton.setDisable(true);
+                launchButton.setText("Client is Loading...");
+            } else {
+                launchButton.setDisable(false);
+                launchButton.setText("Launch Client");
+            }
+        });
+    }
+
+    /**
+     * Monitors the client launch (.exe) process in a separate thread so as not to block any button state logic.
+     * @param process The process to monitor.
+     */
+    private void monitorProcess(Process process) {
+        new Thread(() -> {
+            try {
+                int exitCode = process.waitFor();
+                System.out.println("Client process exited with code: " + exitCode);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                isRunning.set(false);
+                updateLaunchButtonState();
+            }
+        }).start();
+    }
+
     @FXML
     protected void onLaunch() {
         new Thread(() -> {
@@ -228,35 +261,24 @@ public class MainController {
                 try {
                     if (!isRunning.get()) {
                         isRunning.set(true);
+                        updateLaunchButtonState();
 
                         try {
                             ProcessBuilder processBuilder = new ProcessBuilder(config.getRuneLiteExePath());
                             Process process = processBuilder.start();
+                            System.out.println("Client Launched.");
+                            monitorProcess(process);
 
-                            System.out.println("Process started.");
-                            Platform.runLater(() -> {
-                                launchButton.setDisable(true);
-                                launchButton.setText("Client is Running...");
-                            });
-
-                            // TODO This takes a long time to detect that the client closed (i.e. > 25 seconds). Find a way around this.
-                            int exitCode = process.waitFor();
-                            System.out.println("Process exited with code: " + exitCode);
-                        } catch (IOException | InterruptedException e) {
+                        } catch (IOException e) {
                             e.printStackTrace();
-                        } finally {
                             isRunning.set(false);
-                            Platform.runLater(() -> {
-                                launchButton.setDisable(false);
-                                launchButton.setText("Launch Client");
-                            });
+                            updateLaunchButtonState();
                         }
                     } else {
                         System.out.println("Process is already running. Cannot start a new instance.");
                     }
                 } finally {
                     lock.unlock();
-
                 }
             } else {
                 System.out.println("Another thread is attempting to start the process. Try again later.");

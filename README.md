@@ -74,7 +74,7 @@ The full line should look like:
 
 `start "" "%JAVA_EXE%" %JAVA_OPTS% %HYDRA_TOGGLE_OPTS% %DEFAULT_JVM_OPTS% %*`'
 
-- Repackage the zip file with the modified `.bat` file and upload to Github releases.
+- Repackage the zip file with the modified `.bat` file and upload to GitHub releases.
 
 ## Contributing
 
